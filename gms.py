@@ -195,6 +195,34 @@ class GenerativeModel(TrustGame):
                                                         #could model loss of control over your own actions ?
         B[1] = B_choice
         self.B = B
+
+
+    def gen_insecureB(self):
+        """ Fixed B dynamics over time """
+        
+        B = utils.obj_array(self.num_hfactors)
+        # context state dynamics """ Fill out the context state factor dynamics, a sub-array of `B` which we'll call `B_context`"""
+        #remember: context_action_names = ['do nothing'] and context_states = ['friendly','hostile','random']
+        B_context = np.zeros((len(self.context_states), len(self.context_states), len(self.context_action_names)))
+        
+        #transition from friendly to...
+        B_context[ : , 0, 0] = [0.20, 0.30, 0.50]
+        #transition from hostile to
+        B_context[ : , 1, 0] = [0.10, 0.50, 0.40]
+        #transition from random to...
+        B_context[ : , 2, 0] = [0.10, 0.40, 0.50]
+                
+        B[0] = B_context
+        
+        #choice state dynamics """Fill out the choice factor dynamics, a sub-array of `B` which we'll call `B_choice`"""
+        B_choice = np.zeros((len(self.choice_states), len(self.choice_states), len(self.choice_action_names)))
+        
+        for action_id, choice_action_name in enumerate(self.choice_action_names):
+            #remember: choice_action_names = ['keep', 'share']
+            B_choice[action_id, : , action_id] = 1.0 #change this to add 'uncertainty' about actions -> agent is not 100% sure what action_state hes going to get if he chooses a certain action
+                                                        #could model loss of control over your own actions ?
+        B[1] = B_choice
+        self.B = B
         
     def gen_staticB(self):
         """ Fixed B dynamics over time """

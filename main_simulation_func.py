@@ -97,7 +97,7 @@ def run_simulation(first_context, player, plotting='series_only', savefig=False)
 
 if __name__ == '__main__':
 
-    MyAgent = run_simulation(first_context='friendly', player='Player1_healthy', plotting='series_only')
+    MyAgent = run_simulation(first_context='friendly', player='Type2_social_phobia', plotting='series_only')
 
     
 

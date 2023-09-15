@@ -26,7 +26,8 @@ def get_player_agent(name):
         This is meant to model a healthy Person.
         """
         #reward_obs_states = [1.0, 0.0, 0.5]  
-        Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
+        #Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
+        Player.gen_C(p_r0=2.0, p_r1=-1.5, p_r2=1.0)
         #context
         Player.gen_D(pr_context_pos=0.6, pr_context_neg=0.35)
         
@@ -217,10 +218,13 @@ def get_player_agent(name):
         """
         Social phobia with a focus on C and D uncertainty.
 
+        This is the insecure-avoidant subtype. 
+
         ALE CHECK THIS - it may be too similar to biased_C. It needs some adaptation especially in B matrix... 
         """
         #reward_obs_states = [1.0, 0.0, 0.5]
-        Player.gen_B()
+        Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.4, p_share_random=0.5) # previously normal A. 
+        Player.gen_insecureB() # used to be normal gen_B(), now made transitions into random more likely. 
         Player.gen_C(p_r0=1.2, p_r1=-5.5, p_r2=.8) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
         #context
         Player.gen_D(pr_context_pos=0.2, pr_context_neg=0.2)
@@ -248,12 +252,13 @@ def get_player_agent(name):
 
     elif name == 'Type2_social_phobia':
         """
-        Social phobia with a focus on extreme loss avoidance, otherwise intact
+        Social phobia with a focus loss avoidance and a pessimisitc prior. 
 
-        ALE Check this: might need some additional perturbations in B!
+        this is the trauma-and-defeat subtype. 
         
         """
-        Player.gen_B()
+        Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.4, p_share_random=0.5)
+        Player.gen_depressedB()
         Player.gen_C(p_r0=1.0, p_r1= -4.0, p_r2=1.2)
         Player.gen_D(pr_context_pos=0.15, pr_context_neg=0.8)
         #constr agent

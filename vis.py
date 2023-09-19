@@ -274,6 +274,39 @@ def fancy_time_series(T1, T2, c1, c2, MyAgent, MyEnv, where_dots_idx=1, **kw):
 
     plt.legend()
     plt.show()
+
+def plot_average_series(agent, plot_res_coop, plot_res_host, df_series_coop, df_series_host, svg_name, first_context='friendly'):
+
+    # create figure
+    plt.figure()
+    plt.title(agent)
+
+    if first_context == 'friendly':
+        c1 = 'lightblue'
+        c2 = 'coral'
+    elif first_context == 'hostile':
+        c1 = 'coral'
+        c2 = 'lightblue'
+    
+    # background
+    plt.axvspan(0,20, facecolor=c1, alpha=0.2)
+    plt.axvspan(20,40, facecolor=c2, alpha=0.2)
+    
+    # plot coop and host posterior beliefs
+    for res in plot_res_coop: 
+        plt.plot(res, alpha=0.3, color='lightblue')
+        
+    for res in plot_res_host: 
+        plt.plot(res, alpha=0.1, color='red')
+    
+    # plot mean, and label for legend. 
+    plt.plot(df_series_coop.mean(axis=0), label='coop')
+    plt.plot(df_series_host.mean(axis=0), color='red', label='host')
+    plt.xlabel(r't')
+    plt.ylabel(r'p(context)')
+    plt.legend()
+    plt.savefig(svg_name)
+    plt.show()
     
 
 def plot_earned_rewards(df, title='Rewards earned per agent type', filename='earned_rewards_per_agent.svg'):

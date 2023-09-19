@@ -22,6 +22,10 @@ from inference import run_active_inference_loop
 from vis import *
 from main_simulation_func import run_simulation
 
+import random
+
+random.seed(10)
+
 # timestep = 60
 
 # choose plotting option: 'series_only', 'all', 'none'
@@ -69,7 +73,7 @@ run_simulation('hostile', 'Type2_depressed', plotting=plotting)
 run_simulation('friendly', 'Type2_depressed', plotting=plotting)
 
 """
-ACROSS-DISORDER SIMULATIONS ----------------------
+#ACROSS-DISORDER SIMULATIONS ----------------------
 """
 
 # Social phobia agents. 
@@ -80,3 +84,4 @@ run_simulation('friendly', 'Type1_social_phobia', plotting=plotting)
 # Type 2 SoPho: loss avoidance and otherwise normal
 run_simulation('hostile', 'Type2_social_phobia', plotting=plotting)
 run_simulation('friendly', 'Type2_social_phobia', plotting=plotting)
+

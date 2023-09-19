@@ -46,6 +46,9 @@ plot_earned_rewards(df_coop, title='Rewards earned per agent type - cooperative 
 df_hostile = compute_earned_rewards(first_context='hostile')
 plot_earned_rewards(df_hostile, title='Rewards earned per agent type - hostile context first', filename='rewards_hostile_first.svg')
 
+df_coop.to_csv('earned_rewards_coop.csv')
+df_hostile.to_csv('earned_rewards_host.csv')
+
 
 
 

@@ -3,10 +3,12 @@
 Created on Tue Nov 15 12:55:15 2022
 
 @author: janik
+& annalena
 """
 
 import numpy as np
 from pymdp import utils
+import random
 
 class TrustGame(object):
     """ """
@@ -93,7 +95,7 @@ class TrustGame(object):
                     return None
                 partner_action = int(answer)+1
             else:
-                partner_action = utils.sample(np.array([self.p_share, 1-self.p_share, 0.0])) # should be normalized to 1 sample doesnt check for it
+                partner_action = utils.sample(np.array([self.p_share, 1-self.p_share, 0.0])) # this is where the trustee behavior gets sampled. Hard to keep constant...
             reward_obs = self.reward_obs_states[partner_action]
             behaviour_obs = self.behaviour_obs_states[partner_action]
         
@@ -262,13 +264,5 @@ class TrustGameCoopAsymmetric(TrustGame):
         
         return [obs1, obs2]
                 
-                
-            
-            
-    
-            
-            
-            
-        
-        
+                     
     

@@ -57,7 +57,7 @@ def get_player_agent(name):
         Player.gen_A(p_share_friendly=0.5, p_share_hostile=0.5, p_share_random=0.5)
         Player.gen_B()
         #reward_obs_states = [1.0, 0.0, 0.5]  
-        Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0)
+        Player.gen_C(p_r0=2.0, p_r1=-1.5, p_r2=1.0)
         #context
         Player.gen_D(pr_context_pos=1/3, pr_context_neg=1/3)
         
@@ -85,7 +85,7 @@ def get_player_agent(name):
     elif name == 'biased_B':
         
         Player.gen_depressedB()
-        Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0)
+        Player.gen_C(p_r0=2.0, p_r1=-1.5, p_r2=1.0)
         Player.gen_D(pr_context_pos=1/3, pr_context_neg=1/3)
 
         MyAgent = Agent(A=Player.A, B=Player.B, C=Player.C, D=Player.D, E=None, 
@@ -131,7 +131,7 @@ def get_player_agent(name):
 
     elif name == 'biased_D':
         
-        Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0)
+        Player.gen_C(p_r0=2.0, p_r1=-1.5, p_r2=1.0)
         Player.gen_D(pr_context_pos=0.1, pr_context_neg=0.7)
         
         #constr agent

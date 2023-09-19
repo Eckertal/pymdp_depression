@@ -2,7 +2,7 @@
 """
 Created on Fri Nov 11 11:28:54 2022
 
-@author: janik & ale
+@author: janik & annalena
 """
 # imports
 import numpy as np
@@ -274,6 +274,76 @@ def fancy_time_series(T1, T2, c1, c2, MyAgent, MyEnv, where_dots_idx=1, **kw):
 
     plt.legend()
     plt.show()
+
+
+def plot_long_mixed_series(MyAgent, MyEnv, where_dots_idx=1, **kw):
+
+    switch = {'T1': 12, 'T2': 18, 'T3': 24, 'T4': 30, 'T5': 45, 'T6': 52, 'T7': 64,
+              'T8': 72, 'T9': 84,'T10': 98, 'T11': 105, 'T12': 124, 'T13': 134}
+              
+              #'T14': 134, 'T15': 164, 'T16': 172, 'T17': 184, 'T18': 200}
+
+    t_switches = list(switch.values())
+
+    context_order = ['friendly', 'hostile', 'friendly', 'neutral', 'friendly', 'hostile', 'friendly',
+                     'neutral', 'hostile', 'friendly', 'hostile', 'friendly', 'hostile']
+                     #'neutral', 'friendly', 'hostile', 'neutral', 'friendly']
+
+    colors = {'friendly': 'lightblue', 'hostile': 'coral', 'neutral': 'gray'}
+
+    # where_dots_idx: if == 0: on posterior line of coop, if == 1: on hostile line. 
+    col = colors_for_dot_plots(MyAgent, MyEnv)
+    m = markers_for_dot_plots(MyAgent, MyEnv)
+    y = dots_for_plots_func(np.array(MyAgent.beliefs_context)[:,where_dots_idx])
+
+    # basic plot features
+    plt.figure(figsize=(16,10))
+    plt.title(f'{MyAgent.name}',fontsize=25)
+    plt.xlabel(r'$t$',fontsize=20)
+    plt.ylabel(r'$p(context)$',fontsize=20)
+    plt.xticks(np.arange(len(MyAgent.beliefs_context)),fontsize=8, rotation=90)
+    plt.yticks(fontsize=15)
+    plt.ylim(0,1)
+
+    # background colors with several context switches!
+    T1 = t_switches[1]
+    first_context = context_order[0]
+    
+    plt.axvspan(0,T1, facecolor=colors[first_context], alpha=0.3)
+
+    for c, s_idx in zip(context_order, range(1, len(t_switches)-1)):
+
+        T1 = t_switches[s_idx]
+
+        T2 = t_switches[s_idx+1]
+        color = colors[c]
+        plt.axvspan(T1,T2, facecolor=color, alpha=0.3)
+    
+    # plot lines for posterior beliefs
+    plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,0],marker='.', c ='b', markersize=12, label='cooperative')
+    plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,1],marker='.', c = 'r', markersize=12, label='hostile')
+    plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,2],marker='.', c = 'grey', markersize=12, label='random')
+
+    # scatter chosen actions on top
+    sc = plt.scatter(np.arange(len(MyAgent.beliefs_context))+0.5,y,s=150,c=col,alpha=1., label='action',**kw)
+    
+    if (m is not None):
+        paths = []
+        for marker in m:
+            if isinstance(marker, mmarkers.MarkerStyle):
+                marker_obj = marker
+            else:
+                marker_obj = mmarkers.MarkerStyle(marker)
+                
+            path = marker_obj.get_path().transformed(marker_obj.get_transform())
+            paths.append(path)
+
+        sc.set_paths(paths)
+
+    plt.legend()
+    plt.show()
+    
+    return
 
 def plot_average_series(agent, plot_res_coop, plot_res_host, df_series_coop, df_series_host, svg_name, first_context='friendly'):
 

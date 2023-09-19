@@ -1,6 +1,8 @@
 """
 
 MAIN function to perform simulations
+This script will create the canonical simulations in the paper
+with 40 timesteps and one context switch after t=20 timesteps. 
 author @ale
 
 """

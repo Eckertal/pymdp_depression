@@ -219,8 +219,7 @@ def get_player_agent(name):
         Social phobia with a focus on C and D uncertainty.
 
         This is the insecure-avoidant subtype. 
-
-        ALE CHECK THIS - it may be too similar to biased_C. It needs some adaptation especially in B matrix... 
+ 
         """
         #reward_obs_states = [1.0, 0.0, 0.5]
         Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.4, p_share_random=0.5) # previously normal A. 

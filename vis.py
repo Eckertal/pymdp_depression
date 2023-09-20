@@ -238,9 +238,16 @@ def fancy_time_series(T1, T2, c1, c2, MyAgent, MyEnv, where_dots_idx=1, **kw):
     m = markers_for_dot_plots(MyAgent, MyEnv)
     y = dots_for_plots_func(np.array(MyAgent.beliefs_context)[:,where_dots_idx])
 
+    title_names = {'Player1_healthy': 'Healthy-optimistic', 'biased_A': 'A: observational uncertainty', 'biased_B': 'B: fatalistic expectation',
+              'biased_C': 'C: heightened loss aversion', 'biased_D': 'D: pessimistic priors',
+              'Type1_depressed': 'Depression: insensitive-pessimistic', 'Type2_depressed': 'Depression: fatalistic',
+              'Type1_social_phobia': 'Social anxiety: insecure-avoidant', 'Type2_social_phobia': 'Social anxiety: trauma-defeat'}
+
+    title = title_names[MyAgent.name]
+
     # basic plot features
     plt.figure(figsize=(16,10))
-    plt.title(f'{MyAgent.name}',fontsize=25)
+    plt.title(title,fontsize=25)
     plt.xlabel(r'$t$',fontsize=20)
     plt.ylabel(r'$p(context)$',fontsize=20)
     plt.xticks(np.arange(len(MyAgent.beliefs_context)),fontsize=15)

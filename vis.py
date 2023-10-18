@@ -308,7 +308,7 @@ def plot_long_mixed_series(MyAgent, MyEnv, where_dots_idx=1, **kw):
     plt.title(f'{MyAgent.name}',fontsize=25)
     plt.xlabel(r'$t$',fontsize=20)
     plt.ylabel(r'$p(context)$',fontsize=20)
-    plt.xticks(np.arange(len(MyAgent.beliefs_context)),fontsize=8, rotation=90)
+    plt.xticks(np.arange(len(MyAgent.beliefs_context)),fontsize=10, rotation=90)
     plt.yticks(fontsize=15)
     plt.ylim(0,1)
 
@@ -348,6 +348,7 @@ def plot_long_mixed_series(MyAgent, MyEnv, where_dots_idx=1, **kw):
         sc.set_paths(paths)
 
     plt.legend()
+    plt.locator_params(axis='x',nbins=48)
     plt.show()
     
     return
@@ -380,6 +381,7 @@ def plot_average_series(agent, plot_res_coop, plot_res_host, df_series_coop, df_
     plt.plot(df_series_coop.mean(axis=0), label='coop')
     plt.plot(df_series_host.mean(axis=0), color='red', label='host')
     plt.xlabel(r't')
+    plt.ylim(0,1)
     plt.ylabel(r'p(context)')
     plt.legend()
     plt.savefig(svg_name)

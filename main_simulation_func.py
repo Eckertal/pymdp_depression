@@ -99,7 +99,12 @@ def run_simulation(first_context, player, plotting='series_only', savefig=False)
 
 if __name__ == '__main__':
 
-    MyAgent = run_simulation(first_context='friendly', player='Type2_social_phobia', plotting='series_only')
+    player_list = ['biased_B', 'Type1_depressed']
+
+    for player in player_list: 
+
+        MyAgent = run_simulation(first_context='friendly', player=player, plotting='series_only')
+        MyAgent = run_simulation(first_context='hostile', player=player, plotting='series_only')
 
     
 

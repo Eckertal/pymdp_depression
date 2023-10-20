@@ -171,8 +171,8 @@ class GenerativeModel(TrustGame):
         B_context = np.zeros((len(self.context_states), len(self.context_states), len(self.context_action_names)))
         
         if self.neutral_hstate is True:
-            #transition from friendly to...
-            B_context[ : , 0, 0] = [0.50, 0.40, 0.1]
+            #transition from cooperative to...
+            B_context[ : , 0, 0] = [0.20, 0.70, 0.1] #0.50, 0.40 before
             #transition from hostile to
             B_context[ : , 1, 0] = [0.05, 0.9, 0.05]
             #transition from random to...

@@ -115,7 +115,7 @@ def run_long_mixed_series(player, plotting='series_only', savefig=False):
 
 if __name__ == '__main__':
 
-    agents_long_series = ['Player1_healthy']#, 'Type1_depressed', 'Type2_depressed', 'Type2_social_phobia']
+    agents_long_series = ['Player1_healthy', 'Type1_depressed', 'Type2_depressed', 'Type2_social_phobia']
 
     
     for agent in agents_long_series:

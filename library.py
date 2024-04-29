@@ -53,7 +53,7 @@ def get_player_agent(name):
 
     elif name == 'biased_A':
 
-        # ALE CHECK THIS ONE - may be too similar to healthy agent. 
+        # unclear observation model
         Player.gen_A(p_share_friendly=0.5, p_share_hostile=0.5, p_share_random=0.5)
         Player.gen_B()
         #reward_obs_states = [1.0, 0.0, 0.5]  
@@ -158,7 +158,7 @@ def get_player_agent(name):
     if name == 'Type1_depressed':
         """
         This is meant to model a depressed Person.
-        Perturbations focus on C and D
+        reward-insensitive and pessimistic
         """
         #reward_obs_states = [1.0, 0.0, 0.5]
         Player.gen_depressedB()
@@ -187,6 +187,9 @@ def get_player_agent(name):
 
 
     elif name == 'Type2_depressed':
+        """
+        fatalistic
+        """
         
         Player.gen_staticB()
         Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0)
@@ -256,6 +259,33 @@ def get_player_agent(name):
         this is the trauma-and-defeat subtype. 
         
         """
+        Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.4, p_share_random=0.5)
+        Player.gen_depressedB()
+        Player.gen_C(p_r0=1.0, p_r1= -4.0, p_r2=1.2)
+        Player.gen_D(pr_context_pos=0.15, pr_context_neg=0.8)
+        #constr agent
+        MyAgent = Agent(A=Player.A, B=Player.B, C=Player.C, D=Player.D, E=None, 
+                        pA=Player.A, pB=np.array(Player.B,dtype='object'), pD=Player.D, 
+                        policy_len=1, inference_horizon=1, 
+                        control_fac_idx=None, policies=None, 
+                        gamma=16.0, use_utility=True, 
+                        use_states_info_gain=True, use_param_info_gain=True, 
+                        action_selection=action_selection,  
+                        inference_algo="VANILLA", inference_params=None, 
+                        modalities_to_learn=[0,1], 
+                        lr_pA=0.1   , factors_to_learn="all", lr_pB=1.0, lr_pD=1.0, 
+                        use_BMA=True, policy_sep_prior=False, save_belief_hist=True)
+        # update gm?
+        MyAgent.updateA = True
+        MyAgent.updateB = True
+        MyAgent.updateD = True
+        MyAgent.name = name
+
+    elif name == 'Type1_Borderline':
+        """
+        Borderline Personality Disorder Agent
+        """
+
         Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.4, p_share_random=0.5)
         Player.gen_depressedB()
         Player.gen_C(p_r0=1.0, p_r1= -4.0, p_r2=1.2)

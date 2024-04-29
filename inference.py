@@ -22,7 +22,6 @@ def run_active_inference_loop(MyAgent, Env, T = 5):
 
     for t in range(T):
         
-
         qs = MyAgent.infer_states(obs)
         MyAgent.beliefs_context.append(qs[0])
         #imp.plot_beliefs(qs[0], title_str = f"Beliefs about the context at time {t}")

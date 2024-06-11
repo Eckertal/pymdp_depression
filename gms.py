@@ -234,11 +234,11 @@ class GenerativeModel(TrustGame):
         
         if self.neutral_hstate is True:
             #transition from friendly to...
-            B_context[ : , 0, 0] = [0.9, 0.1, 0.]
+            B_context[ : , 0, 0] = [0.6, 0.3, 0.1]
             #transition away from hostile to
-            B_context[ : , 1, 0] = [0, 0.9, 0.1]
+            B_context[ : , 1, 0] = [0.05, 0.8, 0.15]
             #transition from random to...
-            B_context[ : , 2, 0] = [0, 0.1, 0.9]
+            B_context[ : , 2, 0] = [0.1, 0.6, 0.3]
         else:
             #friendly
             B_context[0, 0, 0] = 0.9   # friendly - friendly

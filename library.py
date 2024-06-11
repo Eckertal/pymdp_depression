@@ -190,9 +190,9 @@ def get_player_agent(name):
         """
         fatalistic
         """
-        
         Player.gen_staticB()
-        Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0)
+        Player.gen_C(p_r0=2.5, p_r1=-2.5, p_r2=1.5)
+        # (p_r0=3.0, p_r1=-2.5, p_r2=1.0)
         #context
         Player.gen_D(pr_context_pos=0.1, pr_context_neg=0.6)
         

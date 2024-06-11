@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pdb
 import matplotlib.markers as mmarkers
+import matplotlib.markers as mmarkers
+from matplotlib.lines import Line2D
 
 # functions
 
@@ -139,23 +141,26 @@ def dots_for_plots_func(arr):
     return np.array(arr_list+[0.5])     
 
 def colors_for_dot_plots(MyAgent,MyEnv):
-    c=[]
+    c, l = [], []
     for action_idx, action in enumerate(MyAgent.q_pi_hist):
         m = max(action)
         idx = np.where(action==m)
         idx = idx[0]
         if idx ==1.:
             c.append('k')
+            l.append('no invest')
         if idx==0:
             
             if MyAgent.partner_behaviour[action_idx] == 1.5:
                 c.append('blue')
+                l.append('invest + return')
             else:
                 c.append('red')
+                l.append('invest + abuse')
                 
     #c= [c for action in inferred_actions with (c='blue') if >0.5 ]
 
-    return c
+    return c, l
 
 
 def markers_for_dot_plots(MyAgent,MyEnv):
@@ -234,7 +239,7 @@ def fancy_time_series(T1, T2, c1, c2, MyAgent, MyEnv, where_dots_idx=1, **kw):
     """
     
     # where_dots_idx: if == 0: on posterior line of coop, if == 1: on hostile line. 
-    col = colors_for_dot_plots(MyAgent, MyEnv)
+    col, lab = colors_for_dot_plots(MyAgent, MyEnv)
     m = markers_for_dot_plots(MyAgent, MyEnv)
     y = dots_for_plots_func(np.array(MyAgent.beliefs_context)[:,where_dots_idx])
 
@@ -259,12 +264,17 @@ def fancy_time_series(T1, T2, c1, c2, MyAgent, MyEnv, where_dots_idx=1, **kw):
     plt.axvspan(T1,T1+T2, facecolor=c2, alpha=0.3)
     
     # plot lines for posterior beliefs
-    plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,0],marker='.', c ='b', markersize=12, label='cooperative')
-    plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,1],marker='.', c = 'r', markersize=12, label='hostile')
-    plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,2],marker='.', c = 'grey', markersize=12, label='random')
-
+    line_handles = []
+    line_labels = []
+    line_handles.append(plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,0], marker='.', c='b', markersize=12)[0])
+    line_labels.append('cooperative')
+    line_handles.append(plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,1], marker='.', c='r', markersize=12)[0])
+    line_labels.append('hostile')
+    line_handles.append(plt.plot(np.arange(len(MyAgent.beliefs_context)), np.array(MyAgent.beliefs_context)[:,2], marker='.', c='grey', markersize=12)[0])
+    line_labels.append('random')
+    
     # scatter chosen actions on top
-    sc = plt.scatter(np.arange(len(MyAgent.beliefs_context))+0.5,y,s=150,c=col,alpha=1., label='action',**kw)
+    sc = plt.scatter(np.arange(len(MyAgent.beliefs_context))+0.5,y,s=150,c=col,alpha=1., **kw)
     
     if (m is not None):
         paths = []
@@ -279,7 +289,25 @@ def fancy_time_series(T1, T2, c1, c2, MyAgent, MyEnv, where_dots_idx=1, **kw):
 
         sc.set_paths(paths)
 
-    plt.legend()
+    # Create proxy artists for the legend
+    proxy_artists = []
+    labels = []
+
+    if 'v' in m:
+        proxy_artists.append(Line2D([0], [0], marker='v', color='w', label='invest - abuse', markerfacecolor='red', markersize=10))
+        labels.append('invest - abuse')
+    if '^' in m:
+        proxy_artists.append(Line2D([0], [0], marker='^', color='w', label='invest - return', markerfacecolor='blue', markersize=10))
+        labels.append('invest - return')
+    if 'X' in m:
+        proxy_artists.append(Line2D([0], [0], marker='X', color='w', label='no invest', markerfacecolor='black', markersize=10))
+        labels.append('no invest')
+
+    # Add line plot handles and labels to the legend
+    handles = line_handles + proxy_artists
+    all_labels = line_labels + labels
+    plt.legend(handles=handles, labels=all_labels, loc='upper right')
+
     plt.show()
 
 

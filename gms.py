@@ -142,7 +142,7 @@ class GenerativeModel(TrustGame):
             #transition away from hostile to
             B_context[ : , 1, 0] = [0.32, 0.6, 0.08]
             #transition from random to...
-            B_context[ : , 2, 0] = [0.3, 0.3, 0.4]
+            B_context[ : , 2, 0] = [0.5, 0.3, 0.2]
         else:
             #friendly
             B_context[0, 0, 0] = 0.98 # friendly to friendly
@@ -206,11 +206,11 @@ class GenerativeModel(TrustGame):
         B_context = np.zeros((len(self.context_states), len(self.context_states), len(self.context_action_names)))
         
         #transition from friendly to...
-        B_context[ : , 0, 0] = [0.20, 0.30, 0.50]
+        B_context[ : , 0, 0] = [0.2, 0.3, 0.50]
         #transition from hostile to
-        B_context[ : , 1, 0] = [0.10, 0.50, 0.40]
+        B_context[ : , 1, 0] = [0.1, 0.4, 0.50]
         #transition from random to...
-        B_context[ : , 2, 0] = [0.10, 0.40, 0.50]
+        B_context[ : , 2, 0] = [0.2, 0.3, 0.50]
                 
         B[0] = B_context
         
@@ -239,6 +239,40 @@ class GenerativeModel(TrustGame):
             B_context[ : , 1, 0] = [0.05, 0.8, 0.15]
             #transition from random to...
             B_context[ : , 2, 0] = [0.1, 0.6, 0.3]
+        else:
+            #friendly
+            B_context[0, 0, 0] = 0.9   # friendly - friendly
+            B_context[1, 0, 0] = 0.0  # hostile - friendly
+            B_context[0, 1, 0] = 0.1  # friendly - hostile
+            B_context[1, 1, 0] = 1.0   # hostile - hostile
+        #B_context[ : , : , 0] = np.eye(len(self.context_states))        
+        B[0] = B_context
+        
+        #choice state dynamics """Fill out the choice factor dynamics, a sub-array of `B` which we'll call `B_choice`"""
+        B_choice = np.zeros((len(self.choice_states), len(self.choice_states), len(self.choice_action_names)))
+        
+        for action_id, choice_action_name in enumerate(self.choice_action_names):
+            #remember: choice_action_names = ['keep', 'share']
+            B_choice[action_id, : , action_id] = 1.0 #change this to add 'uncertainty' about actions -> agent is not 100% sure what action_state hes going to get if he chooses a certain action
+                                                        #could model loss of control over your own actions ?
+        B[1] = B_choice
+        self.B = B
+
+    def gen_defeatedB(self):
+        """ Fixed B dynamics over time """
+        
+        B = utils.obj_array(self.num_hfactors)
+        # context state dynamics """ Fill out the context state factor dynamics, a sub-array of `B` which we'll call `B_context`"""
+        #remember: context_action_names = ['do nothing'] and context_states = ['friendly','hostile','random']
+        B_context = np.zeros((len(self.context_states), len(self.context_states), len(self.context_action_names)))
+        
+        if self.neutral_hstate is True:
+            #transition from cooperative to...
+            B_context[ : , 0, 0] = [0.20, 0.60, 0.2] #0.50, 0.40 before
+            #transition from hostile to
+            B_context[ : , 1, 0] = [0.15, 0.8, 0.05]
+            #transition from random to...
+            B_context[ : , 2, 0] = [0.2, 0.3, 0.5]
         else:
             #friendly
             B_context[0, 0, 0] = 0.9   # friendly - friendly

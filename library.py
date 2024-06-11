@@ -16,7 +16,7 @@ def get_player_agent(name):
 
     """
     
-    Player = GenerativeModel(p_share_friendly = 0.81, p_share_hostile = 0.21, p_share_random = 0.5) 
+    Player = GenerativeModel(p_share_friendly = 0.9, p_share_hostile = 0.15, p_share_random = 0.5) 
 
     action_selection = 'deterministic'
     
@@ -27,7 +27,7 @@ def get_player_agent(name):
         """
         #reward_obs_states = [1.0, 0.0, 0.5]  
         #Player.gen_C(p_r0=3.0, p_r1=-2.5, p_r2=1.0) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
-        Player.gen_C(p_r0=2.0, p_r1=-1.5, p_r2=1.0)
+        Player.gen_C(p_r0=2.5, p_r1=-2.2, p_r2=1.0)
         #context
         Player.gen_D(pr_context_pos=0.6, pr_context_neg=0.35)
         
@@ -162,7 +162,7 @@ def get_player_agent(name):
         """
         #reward_obs_states = [1.0, 0.0, 0.5]
         Player.gen_depressedB()
-        Player.gen_C(p_r0=1.0, p_r1=-2.8, p_r2=.8) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
+        Player.gen_C(p_r0=.8, p_r1=-2.2, p_r2=1.0) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
         #context
         Player.gen_D(pr_context_pos=0.15, pr_context_neg=0.8)
         
@@ -181,7 +181,7 @@ def get_player_agent(name):
                         use_BMA=True, policy_sep_prior=False, save_belief_hist=True)
         # update gm?
         MyAgent.updateA = True
-        MyAgent.updateB = True
+        MyAgent.updateB = False
         MyAgent.updateD = True
         MyAgent.name = name
 
@@ -225,13 +225,16 @@ def get_player_agent(name):
  
         """
         #reward_obs_states = [1.0, 0.0, 0.5]
-        Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.4, p_share_random=0.5) # previously normal A. 
+        # ALE REV: changed p_share_hostile from 0.4 to 0.15!!
+        # REV: p_share_random from .5 to .4
+        Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.15, p_share_random=0.4) # previously normal A. 
         Player.gen_insecureB() # used to be normal gen_B(), now made transitions into random more likely. 
-        Player.gen_C(p_r0=1.2, p_r1=-5.5, p_r2=.8) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
+        Player.gen_C(p_r0=2.5, p_r1=-3.5, p_r2=1.) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
         #context
-        Player.gen_D(pr_context_pos=0.2, pr_context_neg=0.2)
+        Player.gen_D(pr_context_pos=0.4, pr_context_neg=0.2)
         
         #constr agent
+        # ALE REV: I also made action_selection = stochastic here!!!
         MyAgent = Agent(A=Player.A, B=Player.B, C=Player.C, D=Player.D, E=None, 
                         pA=Player.A, pB=np.array(Player.B,dtype='object'), pD=Player.D, 
                         policy_len=1, inference_horizon=1, 
@@ -246,7 +249,7 @@ def get_player_agent(name):
                         use_BMA=True, policy_sep_prior=False, save_belief_hist=True)
         # update gm?
         MyAgent.updateA = True
-        MyAgent.updateB = True
+        MyAgent.updateB = False
         MyAgent.updateD = True
         MyAgent.name = name
         
@@ -260,9 +263,9 @@ def get_player_agent(name):
         
         """
         Player.gen_A(p_share_friendly=0.6, p_share_hostile=0.4, p_share_random=0.5)
-        Player.gen_depressedB()
-        Player.gen_C(p_r0=1.0, p_r1= -4.0, p_r2=1.2)
-        Player.gen_D(pr_context_pos=0.15, pr_context_neg=0.8)
+        Player.gen_defeatedB()
+        Player.gen_C(p_r0=1.2, p_r1= -2.2, p_r2=1.3) # ALE REV less risk averse
+        Player.gen_D(pr_context_pos=0.2, pr_context_neg=0.8) # ALE REV higher prior on coop
         #constr agent
         MyAgent = Agent(A=Player.A, B=Player.B, C=Player.C, D=Player.D, E=None, 
                         pA=Player.A, pB=np.array(Player.B,dtype='object'), pD=Player.D, 

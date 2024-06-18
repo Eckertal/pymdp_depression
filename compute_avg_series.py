@@ -20,8 +20,6 @@ all_agents = ['Player1_healthy',
               'Type1_depressed', 'Type2_depressed',
               'Type1_social_phobia', 'Type2_social_phobia']
 
-all_agents = ['biased_B', 'Type1_depressed']
-
 n_simulations = 20
 
 ## Main function to run the simulations: 

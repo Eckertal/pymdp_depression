@@ -308,6 +308,8 @@ def fancy_time_series(T1, T2, c1, c2, MyAgent, MyEnv, where_dots_idx=1, **kw):
     all_labels = line_labels + labels
     plt.legend(handles=handles, labels=all_labels, loc='upper right')
 
+    plt.tight_layout()
+
     plt.show()
 
 

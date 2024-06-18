@@ -2,14 +2,14 @@
 """
 Created on Tue Nov 15 14:16:14 2022
 
-@author: janik
-edits: annae
+@author: janik and annae
 
 """
 
 import numpy as np
 from pymdp import utils
-from envs import TrustGame  
+from envs import TrustGame
+import pdb
 
 class GenerativeModel(TrustGame):
     """ Trust Game Generative Model
@@ -50,7 +50,9 @@ class GenerativeModel(TrustGame):
         self.gen_D()
         
     
-    def gen_A(self,p_share_friendly=None, p_share_hostile=None, p_share_random=None):    
+    def gen_A(self,p_share_friendly=None, p_share_hostile=None, p_share_random=None):
+
+        # set beliefs of observing a return of investment in each context
         if p_share_friendly is not None:
             self.p_share_friendly = p_share_friendly
         if p_share_hostile is not None:
@@ -61,13 +63,15 @@ class GenerativeModel(TrustGame):
         """Generate the A array"""
         A = utils.obj_array( self.num_modalities )
         
-        # fill out reward observation modality A_rew
+        # fill out reward observation modality A_reward
+        # mapping between reward and context
         A_reward = np.zeros((len(self.reward_obs_states), len(self.context_states), len(self.choice_states)))
         for choice_id, choice_name in enumerate(self.choice_states):
             
             if choice_name == 'keep':
                 A_reward[2, : , choice_id] = 1.0                
-                #remember: reward modality = [1.0, 0.0, 0.5] (==self.reward_obs_states) ; choice_states = ['share', 'keep', 'start']
+                # remember: reward modality = [1.0, 0.0, 0.5] (==self.reward_obs_states) ;
+                # choice_states = ['share', 'keep', 'start']
 
             elif choice_name == 'share':
                 
@@ -85,24 +89,23 @@ class GenerativeModel(TrustGame):
 
             elif choice_name == 'start':
                 A_reward[1, : , choice_id] = 1.0
-                
-
      
         A[0] = A_reward
-        # behaviour observation modality 
+
+
+        ######### behaviour observation modality #########
+        # This is the mapping between agent's actions and expected reward... 
         A_behaviour = np.zeros((len(self.behaviour_obs_states), len(self.context_states), len(self.choice_states)))
         
         for choice_id, choice_name in enumerate(self.choice_states):
             #remember behaviour obs modality: ['social', 'anti-social', 'unknown']
             #remember: context_states = ['friendly', 'hostile', 'random']
             if choice_name == 'keep':
-                A_behaviour[2, : , choice_id] = 1.0 #agent expects 'unknown' if he uses action 'keep', could be interesting to alter
-                
-        
+                A_behaviour[2, : , choice_id] = 1.0 #agent expects 'unknown' if he uses action 'keep'
                         
             elif choice_name == 'share':
                 #A_behaviour[0, : , choice_id] = 0
-                #1 friendly
+                #1 friendly context: expectation of action consequences
                 A_behaviour[0, 0 , choice_id] = self.p_share_friendly
                 A_behaviour[1, 0 , choice_id] = 1 - self.p_share_friendly
                 #2 hostile
@@ -118,8 +121,11 @@ class GenerativeModel(TrustGame):
                  
                 
         A[1] = A_behaviour
-        
+
+        #########
         # choice observation modality
+        # this is the mapping between sensed states and true states.
+        # this mapping is deterministic for all agent types. 
         A_choice = np.zeros((len(self.choice_obs_states), len(self.context_states), len(self.choice_states)))
         for choice_id in range(len(self.choice_obs_states)):
             A_choice[choice_id, : , choice_id] = 1.0

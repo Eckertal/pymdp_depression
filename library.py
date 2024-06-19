@@ -163,7 +163,7 @@ def get_player_agent(name):
         """
         #reward_obs_states = [1.0, 0.0, 0.5]
         Player.gen_depressedB()
-        Player.gen_C(p_r0=.8, p_r1=-2.2, p_r2=1.0) #p_r0=0.9, p_r1= -1.5, p_r2=1.5 works well if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
+        Player.gen_C(p_r0=.8, p_r1=-2.2, p_r2=1.0) #p_r0=0.9, p_r1= -1.5, p_r2=1.5; if lr_pA = 0.4, lr_pB = 0.5 and pr_context_pos=0.55, pr_context_neg=0.45
         #context
         Player.gen_D(pr_context_pos=0.15, pr_context_neg=0.8)
         

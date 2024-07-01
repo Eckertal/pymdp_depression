@@ -383,11 +383,11 @@ def plot_long_mixed_series(MyAgent, MyEnv, where_dots_idx=1, **kw):
     
     return
 
-def plot_average_series(agent, plot_res_coop, plot_res_host, df_series_coop, df_series_host, svg_name, first_context='friendly'):
+def plot_average_series(agent, plot_res_coop, plot_res_host, df_series_coop, df_series_host, title, svg_name, first_context='friendly'):
 
     # create figure
     plt.figure()
-    plt.title(agent)
+    plt.title(title)
 
     if first_context == 'friendly':
         c1 = 'lightblue'
@@ -416,6 +416,56 @@ def plot_average_series(agent, plot_res_coop, plot_res_host, df_series_coop, df_
     plt.legend()
     plt.savefig(svg_name)
     plt.show()
+
+def plot_avg_series_revised(agent, res_coop_pn, res_host_pn, df_series_coop_pn, df_series_host_pn,
+                            res_coop_np, res_host_np, df_series_coop_np, df_series_host_np,
+                            title, svg_name):
+    
+    # new plotting function - less work in the future!
+    fig, axs = plt.subplots(2,1)
+    axs[0].set_title(title)
+    fig.set_figheight(10)
+    fig.set_figwidth(7)
+
+    # first, coop-to-host game. 
+    c1 = 'lightblue'
+    c2 = 'coral'
+
+    axs[0].axvspan(0,20,facecolor=c1, alpha=0.2)
+    axs[0].axvspan(20,40, facecolor=c2, alpha=0.2)
+
+    for res in res_coop_pn: 
+        axs[0].plot(res, alpha=0.3, color='lightblue')
+    for res in res_host_pn: 
+        axs[0].plot(res, alpha=0.1, color='red')
+
+    # plot mean
+    axs[0].plot(df_series_coop_pn.mean(axis=0), label='cooperative')
+    axs[0].plot(df_series_host_pn.mean(axis=0), color='red', label='hostile')
+    axs[0].set_xlabel(r't')
+    axs[0].set_ylim(0,1)
+    axs[0].set_ylabel(r'$p(context)$')
+    axs[0].legend(loc='upper right')
+
+    # second, host-to-coop game. 
+    axs[1].axvspan(0,20,facecolor=c2,alpha=0.2)
+    axs[1].axvspan(20,40,facecolor=c1,alpha=0.2)
+
+    for res in res_coop_np: 
+        axs[1].plot(res, alpha=0.3, color='lightblue')
+    for res in res_host_np: 
+        axs[1].plot(res, alpha=0.1, color='red')
+
+    # plot mean
+    axs[1].plot(df_series_coop_np.mean(axis=0), label='cooperative')
+    axs[1].plot(df_series_host_np.mean(axis=0), color='red', label='hostile')
+    axs[1].set_xlabel(r'$t$')
+    axs[1].set_ylim(0,1)
+    axs[1].set_ylabel(r'$p(context)$')
+    
+    plt.savefig(svg_name)
+    plt.show()
+    return
     
 
 def plot_earned_rewards(df, title='Rewards earned per agent type', filename='earned_rewards_per_agent.svg'):

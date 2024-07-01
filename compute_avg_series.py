@@ -13,6 +13,7 @@ from library import get_player_agent
 from inference import run_active_inference_loop
 from main_simulation_func import run_simulation
 #from vis import plot_average_series
+import pdb
 
 
 all_agents = ['Player1_healthy',
@@ -20,11 +21,12 @@ all_agents = ['Player1_healthy',
               'Type1_depressed', 'Type2_depressed',
               'Type1_social_phobia', 'Type2_social_phobia']
 
+
 n_simulations = 20
 
 ## Main function to run the simulations: 
 
-def compute_series(df_names, first_context='friendly'):
+def compute_series(first_context):
 
     series_coop, series_host = dict(),dict()
 
@@ -48,21 +50,20 @@ def compute_series(df_names, first_context='friendly'):
             series_coop[MyAgent.name] = agent_series_coop
             series_host[MyAgent.name] = agent_series_host
 
-    df_coop = pd.DataFrame.from_dict(series_coop)
-    df_coop.to_csv(df_names[0])
-    df_host = pd.DataFrame.from_dict(series_host)
-    df_host.to_csv(df_names[1])
+    df_res = pd.DataFrame.from_dict([series_coop, series_host])
     
-    return df_coop, df_host
+    return df_res
 
 if __name__ == '__main__':
 
     # simulate n_sim rounds of friendly first per agent
-    df_names = ['posterior_coop_coopFirst.csv', 'posterior_host_coopFirst.csv']
-    df_coop, df_host = compute_series(df_names, first_context='friendly')
+    df_name_pn = 'avg_series_pn.csv'
+    df_pn = compute_series(first_context='friendly')
+    df_pn.to_csv(df_name_pn)
 
     # simulate n_sim rounds of hostile first per agent. 
-    df_names2 = ['posterior_coop_hostFirst.csv', 'posterior_host_hostFirst.csv']
-    df_coop, df_host = compute_series(df_names2, first_context='hostile')
+    df_name_np = 'avg_series_np.csv'
+    df_np = compute_series(first_context='hostile')
+    df_np.to_csv(df_name_np)
 
             

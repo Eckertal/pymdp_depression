@@ -25,13 +25,13 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.50383782"
-     inkscape:cx="868.33497"
-     inkscape:cy="923.90841"
-     inkscape:window-width="2400"
-     inkscape:window-height="1261"
-     inkscape:window-x="-9"
-     inkscape:window-y="-9"
-     inkscape:window-maximized="1"
+     inkscape:cx="635.12501"
+     inkscape:cy="606.34591"
+     inkscape:window-width="895"
+     inkscape:window-height="981"
+     inkscape:window-x="3415"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
      id="defs2">
@@ -458,7 +458,7 @@
      id="layer1">
     <g
        id="figure_1"
-       transform="matrix(0.35277778,0,0,0.35277778,-30.187808,-11.819919)">
+       transform="matrix(0.35277778,0,0,0.35277778,-24.68794,174.03444)">
       <g
          id="patch_1" />
       <g
@@ -4616,7 +4616,7 @@
     </g>
     <g
        id="figure_1-2"
-       transform="matrix(0.35277778,0,0,0.35277778,-29.679807,175.01518)">
+       transform="matrix(0.35277778,0,0,0.35277778,-25.134581,-11.986062)">
       <g
          id="axes_1-8">
         <g

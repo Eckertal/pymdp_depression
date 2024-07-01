@@ -10,6 +10,7 @@ import numpy as np
 from pymdp import utils
 from envs import TrustGame
 import pdb
+from scipy.special import softmax
 
 class GenerativeModel(TrustGame):
     """ Trust Game Generative Model
@@ -132,6 +133,47 @@ class GenerativeModel(TrustGame):
         
         A[2] = A_choice 
         self.A = A
+
+
+    def gen_B_opt(self, p_ff, p_fh, p_hf, p_hh, p_rf, p_rh):
+
+        """
+        meaning of args:
+        p_ff: prob friendly-friendly transition, p_fh: friendly-hostile transition...
+        p_hf: prob hostile-friendly p_hh: prob hostile-hostile
+        p_rf: prob random-friendly, p_rh: prob random-hostile
+        """
+
+        B = utils.obj_array(self.num_hfactors)
+        # context state dynamics """ Fill out the context state factor dynamics, a sub-array of `B` which we'll call `B_context`"""
+        #remember: context_action_names = ['do nothing'] and context_states = ['friendly','hostile']
+        B_context = np.zeros((len(self.context_states), len(self.context_states), len(self.context_action_names)))
+
+        # need to softmax here I think!
+        line1 = softmax([p_ff, p_fh, 1-(p_ff + p_fh)])
+        line2 = softmax([p_hf, p_hh, 1-(p_hf + p_hh)])
+        line3 = softmax([p_rf, p_rh, 1-(p_rf + p_rh)])
+        
+        #transition from friendly to...
+        B_context[ : , 0, 0] = line1
+        #transition away from hostile to
+        B_context[ : , 1, 0] = line2
+        #transition from random to...
+        B_context[ : , 2, 0] = line3
+                
+        B[0] = B_context
+        
+        #choice state dynamics """Fill out the choice factor dynamics, a sub-array of `B` which we'll call `B_choice`"""
+        B_choice = np.zeros((len(self.choice_states), len(self.choice_states), len(self.choice_action_names)))
+
+        for action_id, choice_action_name in enumerate(self.choice_action_names):
+            #remember: choice_action_names = ['keep', 'share', 'start', 'observe']
+            B_choice[action_id, : , action_id] = 1.0 #change this to add 'uncertainty' about actions -> agent is not 100% sure what action_state hes going to get if he chooses a certain action
+                                                        #could model loss of control over your own actions ?
+        B[1] = B_choice
+        self.B = B
+
+        
         
         
     def gen_B(self):

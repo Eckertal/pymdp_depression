@@ -2,13 +2,15 @@
 """
 Created on Fri Nov 11 11:55:41 2022
 
-@author: janik
+@author: janik, ale
 
 Active List:
     - Integrate new mode into generative model class
 
 
 """
+
+import pdb
 
 def run_active_inference_loop(MyAgent, Env, T = 5):
 
@@ -49,6 +51,28 @@ def run_active_inference_loop(MyAgent, Env, T = 5):
         print(f'Action at time {t}: {choice_action}')
         print(f'Reward at time {t}: {obs_label[0]}')
         print(f'Observed action at time {t}: {obs_label[1]}')
+
+
+def run_inference_opt(Agent, obs, actions):
+
+    sim_actions = []
+
+    pdb.set_trace()
+
+    for i in range(0, len(obs)) : 
+        reward_obs = obs
+        
+        qs = Agent.infer_states(reward_obs)
+        Agent.beliefs_context.append(qs[0])
+        q_pi, efe = Agent.infer_policies() # do we even need this? We have the actions in this case... we minimize action cost
+
+        chosen_action_id = Agent.sample_action()
+
+        movement_id = int(chosen_action_id[1])
+        sim_actions += movement_id
+
+
+    return sim_actions
         
 def run_active_inference_loop_coop(Agent1, Agent2, Env, T = 5, updateA = True, updateB = True, updateD = True):
 

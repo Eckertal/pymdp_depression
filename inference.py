@@ -57,37 +57,20 @@ def run_active_inference_loop(MyAgent, Env, T = 5):
 
 def run_inference_opt(MyAgent, obs):
 
-    Env = TrustGame(context = 'friendly')
-
     sim_actions = []
     MyAgent.beliefs_context = []
 
     for i in range(0, len(obs)):
 
-        movement_id = 1
-
-        choice_action = Env.choice_action_names[movement_id]
-        obs_label = Env.step(choice_action)
-        obs = [Env.reward_obs_states.index(obs_label[0]), Env.behaviour_obs_states.index(obs_label[1]), Env.choice_obs_states.index(obs_label[2])]
-
-        #current_obs = list(obs[i])
-
-        pdb.set_trace()
+        current_obs = list(obs[i])
         
         qs = MyAgent.infer_states( current_obs )
         MyAgent.beliefs_context.append(qs[0])
 
         # prob of action is in q_pi!
         q_pi, efe = MyAgent.infer_policies()
-        chosen_action_id = MyAgent.sample_action()
-        movement_id = int(chosen_action_id[1])
+        
         sim_actions.append( q_pi[0] )
-
-        choice_action = Env.choice_action_names[movement_id]
-        obs_label = Env.step(choice_action)
-        obs = [Env.reward_obs_states.index(obs_label[0]), Env.behaviour_obs_states.index(obs_label[1]), Env.choice_obs_states.index(obs_label[2])]
-
-        # do i need feedback loop with environment? 
 
     return sim_actions
 

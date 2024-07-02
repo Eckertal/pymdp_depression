@@ -374,9 +374,10 @@ class GenerativeModel(TrustGame):
         """
         D = utils.obj_array(self.num_hfactors)
         
-        
         if self.neutral_hstate is True:
-            D_context = [pr_context_pos, pr_context_neg, 1.0 - pr_context_pos - pr_context_neg]
+            #D_context = [pr_context_pos, pr_context_neg, 1.0 - pr_context_pos - pr_context_neg] # simulations
+            D_context = [pr_context_pos, pr_context_neg, 0]
+            D_context = softmax(D_context)
         else:
             D_context = [pr_context_pos, pr_context_neg]
             

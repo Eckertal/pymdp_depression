@@ -95,8 +95,6 @@ def objective(params, data):
     cost = (np.array(params) ** 2).sum() * 0.1
 
     # run inference with our Agent and current obs
-    """need to write this function"""
-
     all_observations = np.array([reward, partner_obs, responses]).T
     
     sim_actions = run_inference_opt(MyAgent, all_observations)

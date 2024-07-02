@@ -53,7 +53,8 @@ def cost_function(sim_actions, r_t):
     # sim_actions sollte prob sein (prob of action option)
     r_t = np.array(r_t)
     q = (r_t.sum() / r_t.size).clip(0.001, 0.999)
-    cost = q * np.log(q / sim_actions) + (1-q) * np.log((1-q / 1-sim_actions))
+    sim_actions = np.array(sim_actions).clip(0.001, 0.999)
+    cost = q * np.log(q / sim_actions) + (1-q) * np.log((1-q) / (1-sim_actions))
     return cost
 
 def objective(params, data):

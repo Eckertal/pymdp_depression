@@ -50,9 +50,10 @@ num_calls = 0
 
 def cost_function(sim_actions, r_t):
     # minimize cost between simulated actions and real responses
+    # sim_actions sollte prob sein (prob of action option)
     r_t = np.array(r_t)
     q = (r_t.sum() / r_t.size).clip(0.001, 0.999)
-    cost = q * np.log(q / sim_actions) + (1-q) * np.log((1-q/1-sim_actions))
+    cost = q * np.log(q / sim_actions) + (1-q) * np.log((1-q / 1-sim_actions))
     return cost
 
 def objective(params, data):
@@ -86,9 +87,9 @@ def objective(params, data):
                         use_BMA=True, policy_sep_prior=False, save_belief_hist=True)
 
     # read data
+    reward      = list(data['reward'])
     partner_obs = list(data['partnerAnswer'])
-    responses   = list(data['response'])
-    #context     = list(data['context']) # I think this does not exist yet - check preproc  
+    responses   = list(data['response'])  
 
     # set up cost - penalty for num of params
     cost = (np.array(params) ** 2).sum() * 0.1
@@ -96,14 +97,12 @@ def objective(params, data):
     # run inference with our Agent and current obs
     """need to write this function"""
 
-    sim_actions = run_inference_opt(MyAgent, partner_obs, responses)
-
-    # should it maybe be better to minimize cost between actions by model and
-    # the actually observed actions? between like a list of model actions and real actions? 
+    all_observations = np.array([reward, partner_obs, responses]).T
     
-    p_friendly, p_hostile = p_contexts
+    sim_actions = run_inference_opt(MyAgent, all_observations)
 
-    cost += cost_function(p_friendly, r)
+    # minimize cost between observed responses (patients) and simulated action probabilities
+    cost += cost_function(sim_actions, responses)
     sys.stdout.flush()
 
 def opt_worker(args):
@@ -135,12 +134,12 @@ def opt_worker(args):
 
 if __name__ == "__main__":
 
-    path_to_data = os.path.join(root, "fitting", "data_trustgame_depression")
+    path_to_data = os.path.join(root, "fitting")
     path_to_results = os.path.join(root, "fitting", "opt_results")
 
     os.chdir(path_to_data)
 
-    df = pd.read_csv(os.path.join(path_to_data, "data_inclBDI_n17.csv"))
+    df = pd.read_csv(os.path.join(path_to_data, "data_reward_col.csv"))
 
     subjects = list(df['Participant Private ID'].unique())
 
@@ -152,10 +151,12 @@ if __name__ == "__main__":
 
         df_sbj = df[df['Participant Private ID'] == sbj]
 
+        reward = list(df_sbj['reward'])
         partnerAnswer = list(df_sbj['partnerAnswer'])
         response = list(df_sbj['Response'])
 
         data = {
+            "reward": reward, 
             "partnerAnswer": partnerAnswer,
             "response": response
             }
@@ -189,8 +190,10 @@ if __name__ == "__main__":
 
     num_procs = int(args.numprocs)
 
-    with multiprocessing.Pool(processes=num_procs) as pool:
-        for opt_res in pool.imap_unordered(opt_worker, worker_args):
+    if num_procs == 1:
+
+        for opt_res in map(opt_worker, worker_args):
+
             sbj = opt_res["sbj"]
             sbj_try = opt_res["sbj_try"]
             filename = str(f"result_{sbj}_{sbj_try}.pkl")
@@ -198,6 +201,18 @@ if __name__ == "__main__":
                 pickle.dump(opt_res, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             print(f"########## {sbj}, try {sbj_try} saved ##########")
+
+    else: 
+
+        with multiprocessing.Pool(processes=num_procs) as pool:
+            for opt_res in pool.imap_unordered(opt_worker, worker_args):
+                sbj = opt_res["sbj"]
+                sbj_try = opt_res["sbj_try"]
+                filename = str(f"result_{sbj}_{sbj_try}.pkl")
+                with open(filename, "wb") as handle:
+                    pickle.dump(opt_res, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+                print(f"########## {sbj}, try {sbj_try} saved ##########")
 
 
     

@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     for player in player_list: 
 
-        MyAgent = run_simulation(first_context='friendly', player=player, plotting='series_only')
+        MyAgent = run_simulation(first_context='friendly', player=player, plotting='none')
         #MyAgent = run_simulation(first_context='hostile', player=player, plotting='series_only')
 
     

@@ -11,6 +11,7 @@ Active List:
 """
 
 import pdb
+from envs import TrustGame
 
 def run_active_inference_loop(MyAgent, Env, T = 5):
 
@@ -25,6 +26,7 @@ def run_active_inference_loop(MyAgent, Env, T = 5):
     for t in range(T):
         
         qs = MyAgent.infer_states(obs)
+        
         MyAgent.beliefs_context.append(qs[0])
         #imp.plot_beliefs(qs[0], title_str = f"Beliefs about the context at time {t}")
         q_pi, efe = MyAgent.infer_policies()
@@ -53,26 +55,42 @@ def run_active_inference_loop(MyAgent, Env, T = 5):
         print(f'Observed action at time {t}: {obs_label[1]}')
 
 
-def run_inference_opt(Agent, obs, actions):
+def run_inference_opt(MyAgent, obs):
+
+    Env = TrustGame(context = 'friendly')
 
     sim_actions = []
+    MyAgent.beliefs_context = []
 
-    pdb.set_trace()
+    for i in range(0, len(obs)):
 
-    for i in range(0, len(obs)) : 
-        reward_obs = obs
+        movement_id = 1
+
+        choice_action = Env.choice_action_names[movement_id]
+        obs_label = Env.step(choice_action)
+        obs = [Env.reward_obs_states.index(obs_label[0]), Env.behaviour_obs_states.index(obs_label[1]), Env.choice_obs_states.index(obs_label[2])]
+
+        #current_obs = list(obs[i])
+
+        pdb.set_trace()
         
-        qs = Agent.infer_states(reward_obs)
-        Agent.beliefs_context.append(qs[0])
-        q_pi, efe = Agent.infer_policies() # do we even need this? We have the actions in this case... we minimize action cost
+        qs = MyAgent.infer_states( current_obs )
+        MyAgent.beliefs_context.append(qs[0])
 
-        chosen_action_id = Agent.sample_action()
-
+        # prob of action is in q_pi!
+        q_pi, efe = MyAgent.infer_policies()
+        chosen_action_id = MyAgent.sample_action()
         movement_id = int(chosen_action_id[1])
-        sim_actions += movement_id
+        sim_actions.append( q_pi[0] )
 
+        choice_action = Env.choice_action_names[movement_id]
+        obs_label = Env.step(choice_action)
+        obs = [Env.reward_obs_states.index(obs_label[0]), Env.behaviour_obs_states.index(obs_label[1]), Env.choice_obs_states.index(obs_label[2])]
+
+        # do i need feedback loop with environment? 
 
     return sim_actions
+
         
 def run_active_inference_loop_coop(Agent1, Agent2, Env, T = 5, updateA = True, updateB = True, updateD = True):
 

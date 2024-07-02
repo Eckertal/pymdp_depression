@@ -1,6 +1,6 @@
 # fitting the model.
 
-import sys, pdb, glob, os
+import sys, pdb, glob, os, pickle
 import argparse
 import multiprocessing
 root = os.path.dirname(os.getcwd())
@@ -55,6 +55,7 @@ def cost_function(sim_actions, r_t):
     q = (r_t.sum() / r_t.size).clip(0.001, 0.999)
     sim_actions = np.array(sim_actions).clip(0.001, 0.999)
     cost = q * np.log(q / sim_actions) + (1-q) * np.log((1-q) / (1-sim_actions))
+    cost = cost.sum()
     return cost
 
 def objective(params, data):
@@ -102,7 +103,10 @@ def objective(params, data):
 
     # minimize cost between observed responses (patients) and simulated action probabilities
     cost += cost_function(sim_actions, responses)
+    print("cost", cost)
     sys.stdout.flush()
+
+    return cost
 
 def opt_worker(args):
 
@@ -142,9 +146,9 @@ if __name__ == "__main__":
 
     subjects = list(df['Participant Private ID'].unique())
 
-    tries_per_subject = 1 # scale up later on cluster
+    tries_per_subject = 10
     worker_args = []
-
+    
     for sbj in subjects:
         num_calls = 0
 

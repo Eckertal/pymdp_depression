@@ -91,7 +91,13 @@ class GenerativeModel(TrustGame):
             elif choice_name == 'start':
                 A_reward[1, : , choice_id] = 1.0
 
-        A[0] = softmax(A_reward, axis=0)
+        first_col = A_reward[:2, 0, 0]
+
+        softmax_first_col = softmax(first_col)
+
+        A_reward[:2, 0, 0] = softmax_first_col
+
+        A[0] = A_reward
 
 
         ######### behaviour observation modality #########
@@ -119,9 +125,14 @@ class GenerativeModel(TrustGame):
                     
             elif choice_name == 'start':
                 A_behaviour[2 , : , choice_id] = 1.0
-                 
-                
-        A[1] = softmax(A_behaviour, axis=0)
+
+        first_col = A_behaviour[:2, 0, 0]
+
+        softmax_first_col = softmax(first_col)
+
+        A_behaviour[:2, 0, 0] = softmax_first_col
+                        
+        A[1] = A_behaviour, axis=0
 
         #########
         # choice observation modality

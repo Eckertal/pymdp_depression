@@ -91,13 +91,38 @@ class GenerativeModel(TrustGame):
             elif choice_name == 'start':
                 A_reward[1, : , choice_id] = 1.0
 
+        # softmaxing here is a bit complicated: 
+        # first element
+
+        """
+        print(A_reward)
         first_col = A_reward[:2, 0, 0]
-
+        print('first_col before',first_col)
         softmax_first_col = softmax(first_col)
-
         A_reward[:2, 0, 0] = softmax_first_col
+        print('first col after', softmax_first_col)
 
-        A[0] = A_reward
+        # second element
+        second_col = A_reward[:2, 1, 0]
+        print('2nd col before', second_col)
+        softmax_second_col = softmax(second_col)
+        A_reward[:2, 1, 0] = softmax_second_col
+        print('2nd col after', softmax_second_col)
+
+        # third element
+        third_col = A_reward[:2, 2, 0]
+        print('3rd col before', third_col)
+        softmax_third_col = softmax(third_col)
+        A_reward[:2, 2, 0] = softmax_third_col
+        print('3rd col after', third_col)
+
+        print('+++++++++++++++++')
+        print(A_reward)
+
+        #pdb.set_trace()
+        """
+
+        A[0] = softmax(A_reward, axis=0)
 
 
         ######### behaviour observation modality #########
@@ -126,13 +151,9 @@ class GenerativeModel(TrustGame):
             elif choice_name == 'start':
                 A_behaviour[2 , : , choice_id] = 1.0
 
-        first_col = A_behaviour[:2, 0, 0]
-
-        softmax_first_col = softmax(first_col)
-
-        A_behaviour[:2, 0, 0] = softmax_first_col
+        # potentially add the more complex softmax? 
                         
-        A[1] = A_behaviour, axis=0
+        A[1] = softmax(A_behaviour, axis=0)
 
         #########
         # choice observation modality

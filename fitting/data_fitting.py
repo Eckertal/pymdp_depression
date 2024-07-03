@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
     os.chdir(path_to_data)
 
-    df = pd.read_csv(os.path.join(path_to_data, "data_reward_col.csv"))
+    df = pd.read_csv(os.path.join(path_to_data, "data_ambiguous_only.csv"))
 
     subjects = list(df['Participant Private ID'].unique())
 

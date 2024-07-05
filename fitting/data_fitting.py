@@ -120,7 +120,7 @@ def opt_worker(args):
         x0,
         method='Powell',
         bounds=bounds,
-        tol=1e-4,
+        tol=1e-8,
         options={"maxiter":200, "disp":True},
         )
 

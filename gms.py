@@ -216,7 +216,7 @@ class GenerativeModel(TrustGame):
 
         # potentially add the more complex softmax? 
                         
-        A[1] = softmax(A_behaviour, axis=0)
+        A[1] = A_behaviour
 
         #########
         # choice observation modality
@@ -226,7 +226,7 @@ class GenerativeModel(TrustGame):
         for choice_id in range(len(self.choice_obs_states)):
             A_choice[choice_id, : , choice_id] = 1.0
         
-        A[2] = softmax(A_choice, axis=0)
+        A[2] = A_choice
         
         self.A = A
 

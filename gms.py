@@ -91,38 +91,8 @@ class GenerativeModel(TrustGame):
             elif choice_name == 'start':
                 A_reward[1, : , choice_id] = 1.0
 
-        # softmaxing here is a bit complicated: 
-        # first element
 
-        """
-        print(A_reward)
-        first_col = A_reward[:2, 0, 0]
-        print('first_col before',first_col)
-        softmax_first_col = softmax(first_col)
-        A_reward[:2, 0, 0] = softmax_first_col
-        print('first col after', softmax_first_col)
-
-        # second element
-        second_col = A_reward[:2, 1, 0]
-        print('2nd col before', second_col)
-        softmax_second_col = softmax(second_col)
-        A_reward[:2, 1, 0] = softmax_second_col
-        print('2nd col after', softmax_second_col)
-
-        # third element
-        third_col = A_reward[:2, 2, 0]
-        print('3rd col before', third_col)
-        softmax_third_col = softmax(third_col)
-        A_reward[:2, 2, 0] = softmax_third_col
-        print('3rd col after', third_col)
-
-        print('+++++++++++++++++')
-        print(A_reward)
-
-        #pdb.set_trace()
-        """
-
-        A[0] = softmax(A_reward, axis=0)
+        A[0] = A_reward
 
 
         ######### behaviour observation modality #########
@@ -168,6 +138,101 @@ class GenerativeModel(TrustGame):
         self.A = A
 
 
+    def gen_A_opt(self,logit_share_friendly=None, logit_share_hostile=None, logit_share_random=None):
+
+        """use this for the optimization - args are in logit scale and need transformation"""
+
+        p_share_friendly = softmax((logit_share_friendly, 0.0))[0]
+        p_share_hostile  = softmax((logit_share_hostile, 0.0))[0]
+        p_share_random   = softmax((logit_share_random, 0.0))[0]
+
+        # set beliefs of observing a return of investment in each context
+        if p_share_friendly is not None:
+            self.p_share_friendly = p_share_friendly
+        if p_share_hostile is not None:
+            self.p_share_hostile = p_share_hostile
+        if p_share_random is not None:
+            self.p_share_random = p_share_random
+        
+        """Generate the A array"""
+        A = utils.obj_array( self.num_modalities )
+        
+        # fill out reward observation modality A_reward
+        # mapping between reward and context
+        A_reward = np.zeros((len(self.reward_obs_states), len(self.context_states), len(self.choice_states)))
+        for choice_id, choice_name in enumerate(self.choice_states):
+            
+            if choice_name == 'keep':
+                A_reward[2, : , choice_id] = 1.0                
+                # remember: reward modality = [1.0, 0.0, 0.5] (==self.reward_obs_states) ;
+                # choice_states = ['share', 'keep', 'start']
+
+            elif choice_name == 'share':
+                
+                #remember: context_states = ['friendly', 'hostile', 'random']
+                #1 context = friendly
+                A_reward[0 , 0, choice_id] = self.p_share_friendly
+                A_reward[1 , 0, choice_id] = 1 - self.p_share_friendly
+                #2 context hostile
+                A_reward[0, 1, choice_id] = self.p_share_hostile
+                A_reward[1, 1, choice_id] = 1 - self.p_share_hostile
+                if self.neutral_hstate is True:
+                    A_reward[0, 2, choice_id] = self.p_share_random
+                    A_reward[1, 2, choice_id] = 1 - self.p_share_random
+            
+
+            elif choice_name == 'start':
+                A_reward[1, : , choice_id] = 1.0
+
+
+        A[0] = A_reward
+
+
+        ######### behaviour observation modality #########
+        # This is the mapping between agent's actions and expected reward... 
+        A_behaviour = np.zeros((len(self.behaviour_obs_states), len(self.context_states), len(self.choice_states)))
+        
+        for choice_id, choice_name in enumerate(self.choice_states):
+            #remember behaviour obs modality: ['social', 'anti-social', 'unknown']
+            #remember: context_states = ['friendly', 'hostile', 'random']
+            if choice_name == 'keep':
+                A_behaviour[2, : , choice_id] = 1.0 #agent expects 'unknown' if he uses action 'keep'
+                        
+            elif choice_name == 'share':
+                #A_behaviour[0, : , choice_id] = 0
+                #1 friendly context: expectation of action consequences
+                A_behaviour[0, 0 , choice_id] = self.p_share_friendly
+                A_behaviour[1, 0 , choice_id] = 1 - self.p_share_friendly
+                #2 hostile
+                A_behaviour[0, 1 , choice_id] = self.p_share_hostile #0.2
+                A_behaviour[1, 1 , choice_id] = 1 - self.p_share_hostile
+                if self.neutral_hstate is True:
+                    A_behaviour[0, 2, choice_id] = self.p_share_random
+                    A_behaviour[1, 2, choice_id] = 1 - self.p_share_random
+                    
+                    
+            elif choice_name == 'start':
+                A_behaviour[2 , : , choice_id] = 1.0
+
+        # potentially add the more complex softmax? 
+                        
+        A[1] = softmax(A_behaviour, axis=0)
+
+        #########
+        # choice observation modality
+        # this is the mapping between sensed states and true states.
+        # this mapping is deterministic for all agent types. 
+        A_choice = np.zeros((len(self.choice_obs_states), len(self.context_states), len(self.choice_states)))
+        for choice_id in range(len(self.choice_obs_states)):
+            A_choice[choice_id, : , choice_id] = 1.0
+        
+        A[2] = softmax(A_choice, axis=0)
+        
+        self.A = A
+
+        
+
+
     def gen_B_opt(self, p_ff, p_fh, p_hf, p_hh, p_rf, p_rh):
 
         """
@@ -182,10 +247,10 @@ class GenerativeModel(TrustGame):
         #remember: context_action_names = ['do nothing'] and context_states = ['friendly','hostile']
         B_context = np.zeros((len(self.context_states), len(self.context_states), len(self.context_action_names)))
 
-        # need to softmax here I think!
-        line1 = softmax([p_ff, p_fh, 1-(p_ff + p_fh)])
-        line2 = softmax([p_hf, p_hh, 1-(p_hf + p_hh)])
-        line3 = softmax([p_rf, p_rh, 1-(p_rf + p_rh)])
+        # need to softmax here I think! Softmax with zero bc these are also in logit scale. 
+        line1 = softmax([p_ff, p_fh, 0])
+        line2 = softmax([p_hf, p_hh, 0])
+        line3 = softmax([p_rf, p_rh, 0])
         
         #transition from friendly to...
         B_context[ : , 0, 0] = line1

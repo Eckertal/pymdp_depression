@@ -61,7 +61,7 @@ def cost_function(sim_actions, r_t):
 def objective(params, data):
 
     # unpack 14 parameters.
-    (p_share_f, p_share_h, p_share_r,
+    (logit_share_f, logit_share_h, logit_share_r,
     p_ff, p_fh, p_hf, p_hh, p_rf, p_rh,
     p_r0, p_r1, p_r2,
     pr_context_pos, pr_context_neg) = params
@@ -70,7 +70,7 @@ def objective(params, data):
     Player = GenerativeModel(p_share_friendly=0.9, p_share_hostile=0.15, p_share_random=0.5)
     action_selection='deterministic'
 
-    Player.gen_A(p_share_f, p_share_h, p_share_r)
+    Player.gen_A_opt(logit_share_f, logit_share_h, logit_share_r)
     Player.gen_B_opt(p_ff, p_fh, p_hf, p_hh, p_rf, p_rh)
     Player.gen_C(p_r0, p_r1, p_r2)
     Player.gen_D(pr_context_pos, pr_context_neg)

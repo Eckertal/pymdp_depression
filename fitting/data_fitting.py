@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
     os.chdir(path_to_data)
 
-    df = pd.read_csv(os.path.join(path_to_data, "final_data.csv"))
+    df = pd.read_csv(os.path.join(path_to_data, "data_inclBDI_n25.csv"))
 
     subjects = list(df['Participant Private ID'].unique())
 

@@ -60,6 +60,10 @@ def run_inference_opt(MyAgent, obs):
     sim_actions = []
     MyAgent.beliefs_context = []
 
+    MyAgent.reset()
+    # starting action
+    
+    
     for i in range(0, len(obs)):
 
         current_obs = list(obs[i])
@@ -70,7 +74,12 @@ def run_inference_opt(MyAgent, obs):
         # prob of action is in q_pi!
         q_pi, efe = MyAgent.infer_policies()
         
+        action = MyAgent.sample_action()
+        # store the action that was actually executed
+        MyAgent.prev_actions[-1][1]=current_obs[2]
+        
         sim_actions.append( q_pi[0] )
+        
 
     return sim_actions
 

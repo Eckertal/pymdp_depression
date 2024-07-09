@@ -182,9 +182,10 @@ class GenerativeModel(TrustGame):
             
 
             elif choice_name == 'start':
-                A_reward[1, : , choice_id] = 1.0
+                A_reward[2, : , choice_id] = 1.0
 
 
+        print(self.p_share_friendly,self.p_share_hostile,self.p_share_random)
         A[0] = A_reward
 
 
@@ -457,8 +458,11 @@ class GenerativeModel(TrustGame):
         C_reward = np.zeros(len(self.reward_obs_states))
         
         C_reward[:3] = softmax([p_r0, p_r1, p_r2])
-    
+        
+        C[1] = softmax(C[1])
+        C[2] = softmax(C[2])
         C[0] = C_reward
+        
         self.C=C
         
         

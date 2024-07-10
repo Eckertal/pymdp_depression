@@ -69,7 +69,7 @@ def objective(params, data):
     # unpack 14 parameters.
     (logit_share_f, logit_share_h, logit_share_r,
     p_ff, p_fh, p_hf, p_hh, p_rf, p_rh,
-    #p_r0, p_r1, p_r2,
+    p_r0, p_r1, p_r2,
     pr_context_pos, pr_context_neg) = params
 
     # init agent and gms
@@ -86,9 +86,9 @@ def objective(params, data):
                         pA=Player.A, pB=np.array(Player.B,dtype='object'), pD=Player.D, 
                         policy_len=1, inference_horizon=1, 
                         control_fac_idx=None, policies=None, 
-                        gamma=0.1, alpha=5.0, #alpha=16.0,
+                        gamma=0.1, #alpha=5.0, 
                         use_utility=True, 
-                        use_states_info_gain=True, use_param_info_gain=True, 
+                        use_states_info_gain=True, use_param_info_gain=False, # set to false here, maybe replace with param??!
                         action_selection=action_selection, #sampling_mode="marginal", 
                         inference_algo="VANILLA", inference_params=None, 
                         modalities_to_learn=[0,1], 
@@ -168,9 +168,9 @@ if __name__ == "__main__":
         response = list(df_sbj['Response'])
 
         # extreme data: always share, always lose
-        reward = [0]*len(reward)
-        partnerAnswer = [0]*len(partnerAnswer)
-        response = [0]*len(response)
+        #reward = [0]*len(reward)
+        #partnerAnswer = [0]*len(partnerAnswer)
+        #response = [0]*len(response)
 
         data = {
             "reward": reward, 
@@ -179,20 +179,20 @@ if __name__ == "__main__":
             }
 
         space = [
-            (-4.0, 4.0), # friendly share
-            (-4.0, 4.0), # hostile share
-            (-4.0, 4.0), # random share
-            (-2.0, 2.0),
-            (-2.0, 2.0),
-            (-2.0, 2.0),
-            (-2.0, 2.0),
-            (-2.0, 2.0),
-            (-2.0, 2.0),
-            #(-2.0, 2.0),
-            #(-2.0, 2.0),
-            #(-2.0, 2.0),
-            (-2.0, 2.0),
-            (-2.0, 2.0)
+            ( 0.0, 4.0), # friendly share
+            (-4.0, 0.0), # hostile share
+            (-1.0, 1.0), # random share
+            ( 0.0, 2.0), # trans f-f
+            (-2.0, 0.0), # trans f-h
+            (-2.0, 0.0), # trans h-f
+            ( 0.0, 2.0), # trans h-h
+            (-2.0, 0.0), # trans r-f
+            (-2.0, 0.0), # trans r-h
+            ( 0.0, 4.0), # preference win
+            (-4.0, 0.0), # preference loss
+            ( 0.0, 2.0), # preference keep
+            (-2.0, 2.0), # prior cooperative context
+            (-2.0, 2.0)  # prior hostile context
             ]
 
         for i in range(tries_per_subject):

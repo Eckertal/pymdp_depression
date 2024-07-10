@@ -58,7 +58,7 @@ def cost_function(p_sim_share, r_t):
 
     max_cost_per_trial = clip_val*np.log(clip_val/(1.0-clip_val)) + (1.0-clip_val)*np.log((1.0-clip_val)/clip_val)
     
-    cost = r_t * np.log(r_t/p_sim_share) + (1.0-r_t) * np.log((1.0-r_t) / (1.0-p_sim_share))
+    cost = p_sim_share * np.log(p_sim_share/r_t) + (1.0-p_sim_share) * np.log((1.0-p_sim_share) / (1.0-r_t))
  
     cost=cost.mean()
     
@@ -66,29 +66,30 @@ def cost_function(p_sim_share, r_t):
 
 def objective(params, data):
 
-    # unpack 14 parameters.
+    # unpack 15 parameters.
     (logit_share_f, logit_share_h, logit_share_r,
-    p_ff, p_fh, p_hf, p_hh, p_rf, p_rh,
-    p_r0, p_r1, p_r2,
-    pr_context_pos, pr_context_neg) = params
+    logit_ff, logit_fh, logit_hf, logit_hh, logit_rf, logit_rh,
+    logit_r0, logit_r1, logit_r2,
+    logit_context_pos, logit_context_neg,
+    epsilon) = params
 
     # init agent and gms
     Player = GenerativeModel(p_share_friendly=0.9, p_share_hostile=0.15, p_share_random=0.5)
     action_selection='deterministic'
 
     Player.gen_A_opt(logit_share_f, logit_share_h, logit_share_r)
-    Player.gen_B_opt(p_ff, p_fh, p_hf, p_hh, p_rf, p_rh)
-    Player.gen_C(p_r0, p_r1, p_r2)
+    Player.gen_B_opt(logit_ff, logit_fh, logit_hf, logit_hh, logit_rf, logit_rh)
+    Player.gen_C(logit_r0, logit_r1, logit_r2)
     #Player.gen_C(2.0,-2.0,0.0)
-    Player.gen_D(pr_context_pos, pr_context_neg)
+    Player.gen_D(logit_context_pos, logit_context_neg)
 
     MyAgent = Agent(A=Player.A, B=Player.B, C=Player.C, D=Player.D, E=None, 
                         pA=Player.A, pB=np.array(Player.B,dtype='object'), pD=Player.D, 
                         policy_len=1, inference_horizon=1, 
                         control_fac_idx=None, policies=None, 
-                        gamma=0.1, #alpha=5.0, 
+                        gamma=1.0, alpha=1.0, epsilon=epsilon,
                         use_utility=True, 
-                        use_states_info_gain=True, use_param_info_gain=False, # set to false here, maybe replace with param??!
+                        use_states_info_gain=True, use_param_info_gain=True, 
                         action_selection=action_selection, #sampling_mode="marginal", 
                         inference_algo="VANILLA", inference_params=None, 
                         modalities_to_learn=[0,1], 
@@ -167,6 +168,12 @@ if __name__ == "__main__":
         partnerAnswer = list(df_sbj['partnerAnswer'])
         response = list(df_sbj['Response'])
 
+        # test data scenario 1
+        #n=len(reward)//2
+        #reward =        [2]*n + [0]*n + [1]*(n//2) + [2]*(n//2)
+        #partnerAnswer = [2]*n + [0]*n + [1]*(n//2) + [2]*(n//2)
+        #response =      [1]*n + [0]*n + [0]*(n//2) + [1]*(n//2)
+
         # extreme data: always share, always lose
         #reward = [0]*len(reward)
         #partnerAnswer = [0]*len(partnerAnswer)
@@ -179,20 +186,21 @@ if __name__ == "__main__":
             }
 
         space = [
-            ( 0.0, 4.0), # friendly share
-            (-4.0, 0.0), # hostile share
+            (1.0, 4.0), # friendly share
+            (-4.0, -1.0), # hostile share
             (-1.0, 1.0), # random share
-            ( 0.0, 2.0), # trans f-f
-            (-2.0, 0.0), # trans f-h
-            (-2.0, 0.0), # trans h-f
-            ( 0.0, 2.0), # trans h-h
-            (-2.0, 0.0), # trans r-f
-            (-2.0, 0.0), # trans r-h
-            ( 0.0, 4.0), # preference win
-            (-4.0, 0.0), # preference loss
-            ( 0.0, 2.0), # preference keep
-            (-2.0, 2.0), # prior cooperative context
-            (-2.0, 2.0)  # prior hostile context
+            (0.0, 4.0), # transition ff
+            (-2.0, 0.0), # transition fh
+            (-2.0, 0.0), # transition hf
+            (0.0, 4.0), # transition hh
+            (-2.0, 0.0), # transition rf
+            (-2.0, 0.0), # transition rh
+            (1.0, 4.0), # reward win
+            (-4.0, -1.0), # reward loss
+            (-1.0, 1.0), # reward keep
+            (-2.0, 2.0), # prior friendly
+            (-2.0, 2.0),  # prior hostile
+            (0.0,1.0) # epsilon: weight of epistemic drive
             ]
 
         for i in range(tries_per_subject):

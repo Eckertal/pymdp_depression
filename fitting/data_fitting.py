@@ -127,8 +127,8 @@ def opt_worker(args):
         x0,
         method='Powell',
         bounds=bounds,
-        tol=1e-3,
-        options={"maxiter":20, "disp":True},
+        tol=1e-8,
+        options={"maxiter":200, "disp":True},
         )
 
     if "args" in r:

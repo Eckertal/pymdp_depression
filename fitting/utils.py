@@ -15,7 +15,8 @@ def softmax_params(*params):
     (p_share_f, p_share_h, p_share_r,
     p_ff, p_fh, p_hf, p_hh, p_rf, p_rh,
     p_r0, p_r1, p_r2,
-    pr_context_pos, pr_context_neg) = params
+    pr_context_pos, pr_context_neg,
+    epsilon) = params
 
     # softmax A
     p_share_f_s, p_share_h_s, p_share_r_s = softmax([p_share_f, p_share_h, p_share_r])
@@ -33,7 +34,8 @@ def softmax_params(*params):
     softmaxed = {'A': [p_share_f_s, p_share_h_s, p_share_r_s],
                  'B': [p_ff_s, p_fh_s, p_hf_s, p_hh_s, p_rf_s, p_rh_s],
                  'C': [p_r0_s, p_r1_s, p_r2_s],
-                 'D': [pr_pos_s, pr_neg_s, pr_rand_s]}
+                 'D': [pr_pos_s, pr_neg_s, pr_rand_s],
+                 'ep': epsilon}
 
     return softmaxed
 

@@ -78,8 +78,8 @@ def objective(params, data):
 
     Player.gen_A_opt(logit_share_f, logit_share_h, logit_share_r)
     Player.gen_B_opt(p_ff, p_fh, p_hf, p_hh, p_rf, p_rh)
-    #Player.gen_C(p_r0, p_r1, p_r2)
-    Player.gen_C(2.0,-2.0,0.0)
+    Player.gen_C(p_r0, p_r1, p_r2)
+    #Player.gen_C(2.0,-2.0,0.0)
     Player.gen_D(pr_context_pos, pr_context_neg)
 
     MyAgent = Agent(A=Player.A, B=Player.B, C=Player.C, D=Player.D, E=None, 

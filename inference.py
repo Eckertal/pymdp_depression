@@ -11,6 +11,7 @@ Active List:
 """
 
 import pdb
+import numpy as np
 from envs import TrustGame
 
 def run_active_inference_loop(MyAgent, Env, T = 5):
@@ -79,6 +80,8 @@ def run_inference_opt(MyAgent, obs):
         MyAgent.prev_actions[-1][1]=current_obs[2]
         
         sim_actions.append( q_pi[0] )
+
+    print('sim_actions',np.mean(sim_actions))
         
 
     return sim_actions

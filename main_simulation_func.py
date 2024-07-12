@@ -99,7 +99,7 @@ def run_simulation(first_context, player, plotting='series_only', savefig=False)
 
 if __name__ == '__main__':
 
-    player_list = ['biased_D']
+    player_list = ['Type1_social_phobia']
 
     for player in player_list: 
 

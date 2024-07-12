@@ -63,9 +63,12 @@ def make_soft_B(p_ff, p_fh, p_hf, p_hh, p_rf, p_rh):
     #transition from random to...
     B_context[ : , 2, 0] = line3
 
-    soft_B = B_context    
+    soft_B = B_context
+
+    assert np.allclose(soft_B.sum(axis=0), np.array([[1.],[1.],[1.]]))
 
     return soft_B
+
 
 
 if __name__ == '__main__':

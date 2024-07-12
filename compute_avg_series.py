@@ -16,17 +16,18 @@ from main_simulation_func import run_simulation
 import pdb
 
 
-all_agents = ['Player1_healthy',
-              'biased_A', 'biased_B', 'biased_C', 'biased_D',
-              'Type1_depressed', 'Type2_depressed',
-              'Type1_social_phobia', 'Type2_social_phobia']
+#all_agents = ['Player1_healthy','biased_A', 'biased_B', 'biased_C', 'biased_D',
+#              'Type1_depressed', 'Type2_depressed',
+#              'Type1_social_phobia', 'Type2_social_phobia']
 
+
+all_agents = ['healthiest', 'sickest']
 
 n_simulations = 20
 
 ## Main function to run the simulations: 
 
-def compute_series(first_context):
+def compute_series(first_context, agents=all_agents):
 
     series_coop, series_host = dict(),dict()
 
@@ -55,15 +56,28 @@ def compute_series(first_context):
     return df_res
 
 if __name__ == '__main__':
-
+    
+    """
     # simulate n_sim rounds of friendly first per agent
     df_name_pn = 'avg_series_pn.csv'
-    df_pn = compute_series(first_context='friendly')
+    df_pn = compute_series(first_context='friendly', agents=all_agents)
     df_pn.to_csv(df_name_pn)
 
     # simulate n_sim rounds of hostile first per agent. 
     df_name_np = 'avg_series_np.csv'
-    df_np = compute_series(first_context='hostile')
+    df_np = compute_series(first_context='hostile', agents=all_agents)
+    df_np.to_csv(df_name_np)
+
+    """
+
+    
+
+    df_name_pn = 'avg_series_pn.csv'
+    df_pn = compute_series(first_context='friendly', agents=all_agents)
+    df_pn.to_csv(df_name_pn)
+
+    df_name_np = 'avg_series_np.csv'
+    df_np = compute_series(first_context='hostile', agents=all_agents)
     df_np.to_csv(df_name_np)
 
             

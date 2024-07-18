@@ -2,13 +2,17 @@
 """
 Created on Fri Nov 11 11:55:41 2022
 
-@author: janik
+@author: janik, ale
 
 Active List:
     - Integrate new mode into generative model class
 
 
 """
+
+import pdb
+import numpy as np
+from envs import TrustGame
 
 def run_active_inference_loop(MyAgent, Env, T = 5):
 
@@ -22,8 +26,8 @@ def run_active_inference_loop(MyAgent, Env, T = 5):
 
     for t in range(T):
         
-
         qs = MyAgent.infer_states(obs)
+        
         MyAgent.beliefs_context.append(qs[0])
         #imp.plot_beliefs(qs[0], title_str = f"Beliefs about the context at time {t}")
         q_pi, efe = MyAgent.infer_policies()
@@ -50,6 +54,38 @@ def run_active_inference_loop(MyAgent, Env, T = 5):
         print(f'Action at time {t}: {choice_action}')
         print(f'Reward at time {t}: {obs_label[0]}')
         print(f'Observed action at time {t}: {obs_label[1]}')
+
+
+def run_inference_opt(MyAgent, obs):
+
+    sim_actions = []
+    MyAgent.beliefs_context = []
+
+    MyAgent.reset()
+    # starting action
+    
+    
+    for i in range(0, len(obs)):
+
+        current_obs = list(obs[i])
+        
+        qs = MyAgent.infer_states( current_obs )
+        MyAgent.beliefs_context.append(qs[0])
+
+        # prob of action is in q_pi!
+        q_pi, efe = MyAgent.infer_policies()
+        
+        action = MyAgent.sample_action()
+        # store the action that was actually executed
+        MyAgent.prev_actions[-1][1]=current_obs[2]
+        
+        sim_actions.append( q_pi[0] )
+
+    print('sim_actions',np.mean(sim_actions))
+        
+
+    return sim_actions
+
         
 def run_active_inference_loop_coop(Agent1, Agent2, Env, T = 5, updateA = True, updateB = True, updateD = True):
 

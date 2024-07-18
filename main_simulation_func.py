@@ -3,7 +3,7 @@
 MAIN function to perform simulations
 This script will create the canonical simulations in the paper
 with 40 timesteps and one context switch after t=20 timesteps. 
-author @ale
+author @annae
 
 """
 
@@ -99,14 +99,12 @@ def run_simulation(first_context, player, plotting='series_only', savefig=False)
 
 if __name__ == '__main__':
 
-    player_list = ['biased_B', 'Type1_depressed']
+    player_list = ['Type1_social_phobia']
 
     for player in player_list: 
 
-        MyAgent = run_simulation(first_context='friendly', player=player, plotting='series_only')
-        MyAgent = run_simulation(first_context='hostile', player=player, plotting='series_only')
+        MyAgent = run_simulation(first_context='friendly', player=player, plotting='none')
+        #MyAgent = run_simulation(first_context='hostile', player=player, plotting='series_only')
 
     
-
-
  
